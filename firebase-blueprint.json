@@ -1,0 +1,109 @@
+{
+  "entities": {
+    "Speaker": {
+      "title": "Speaker",
+      "description": "Information about a speaker or contributor.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name." },
+        "bio": { "type": "string", "description": "Short biography." },
+        "imageUrl": { "type": "string", "description": "Profile picture URL." }
+      },
+      "required": ["name"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Topic or category for the content.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the category (e.g., Aqeedah, Fiqh)." }
+      },
+      "required": ["name"]
+    },
+    "Content": {
+      "title": "Content",
+      "description": "Library content item (article, audio, video, PDF).",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "body": { "type": "string", "description": "Rich text or markdown content for articles." },
+        "type": { "type": "string", "enum": ["ARTICLE", "AUDIO", "VIDEO", "PDF"] },
+        "mediaUrl": { "type": "string", "description": "S3 link, YouTube URL, or PDF link." },
+        "youtubeId": { "type": "string", "description": "11-character YouTube video ID." },
+        "speakerId": { "type": "string", "description": "Reference to the Speaker entity." },
+        "categoryId": { "type": "string", "description": "Reference to the Category entity." },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "type", "speakerId", "categoryId", "createdAt"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "A curated series of lessons or lectures.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "lessonCount": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "createdAt"]
+    },
+    "Fawaaid": {
+      "title": "Fawaaid",
+      "description": "Short beneficial points or insights.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "author": { "type": "string" },
+        "source": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "App user data.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "isAdmin": { "type": "boolean" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/speakers/{speakerId}": {
+      "schema": "Speaker",
+      "description": "Collection of speakers."
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Collection of categories."
+    },
+    "/contents/{contentId}": {
+      "schema": "Content",
+      "description": "Collection of content items."
+    },
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Collection of courses."
+    },
+    "/fawaaid/{benefitId}": {
+      "schema": "Fawaaid",
+      "description": "Collection of short benefits."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles."
+    }
+  }
+}
