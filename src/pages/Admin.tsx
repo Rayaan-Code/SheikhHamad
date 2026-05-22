@@ -7,6 +7,7 @@ import type { Speaker, Category, Content, Course } from '../types';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Plus, Database, AlertCircle, Upload, CheckCircle2, Lock, LogIn, ChevronLeft, UserPlus, FolderPlus, Trash2, GraduationCap } from 'lucide-react';
+import MarkdownEditor from '../components/MarkdownEditor';
 
 export default function Admin() {
   // Content Form State
@@ -697,16 +698,12 @@ export default function Admin() {
                     </div>
                   )}
 
-                  <div>
-                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-brown-dark/40 mb-3">Content Body (Markdown)</label>
-                    <textarea 
-                      value={body} 
-                      onChange={(e) => setBody(e.target.value)}
-                      rows={10}
-                      className="w-full bg-white border border-beige-dark rounded-2xl py-5 px-6 focus:ring-2 focus:ring-gold outline-none font-mono text-sm leading-relaxed transition-all"
-                      placeholder="Detailed description or article text..."
-                    />
-                  </div>
+                  <MarkdownEditor
+                    value={body}
+                    onChange={setBody}
+                    placeholder="Detailed description or article text..."
+                    label="Content Body"
+                  />
                 </div>
 
                 <button 
