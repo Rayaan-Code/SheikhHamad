@@ -140,21 +140,21 @@ export default function MarkdownEditor({ value, onChange, placeholder = 'Write y
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-brown-dark/40">
-          {label} <span className="text-brown-dark/20">(Markdown)</span>
+        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-brown-dark/60">
+          {label} <span className="text-brown-dark/30">(Markdown)</span>
         </label>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-beige/50 rounded-xl p-0.5 border border-beige-dark/50">
+          <div className="flex items-center gap-1 bg-beige-subtle rounded-xl p-0.5 border border-beige-dark shadow-inner">
             <button
               type="button"
               onClick={() => setPreview(false)}
               className={`px-3 py-1.5 rounded-[10px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 !preview
-                  ? 'bg-white text-brown-dark shadow-sm'
+                  ? 'bg-white text-brown-dark shadow-sm ring-1 ring-beige-dark/30'
                   : 'text-brown-dark/30 hover:text-brown-dark/60'
               }`}
             >
-              <Pencil size={11} />
+              <Pencil size={12} />
               Edit
             </button>
             <button
@@ -162,11 +162,11 @@ export default function MarkdownEditor({ value, onChange, placeholder = 'Write y
               onClick={() => setPreview(true)}
               className={`px-3 py-1.5 rounded-[10px] text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                 preview
-                  ? 'bg-white text-brown-dark shadow-sm'
+                  ? 'bg-white text-brown-dark shadow-sm ring-1 ring-beige-dark/30'
                   : 'text-brown-dark/30 hover:text-brown-dark/60'
               }`}
             >
-              <Eye size={11} />
+              <Eye size={12} />
               Preview
             </button>
           </div>
@@ -175,26 +175,28 @@ export default function MarkdownEditor({ value, onChange, placeholder = 'Write y
 
       <div className={`bg-white border border-beige-dark rounded-[2rem] overflow-hidden transition-all focus-within:ring-2 focus-within:ring-gold`}>
         {!preview && (
-          <div className="flex items-center gap-0.5 px-4 py-3 border-b border-beige-dark/50 bg-beige-subtle/30 overflow-x-auto custom-scrollbar">
-            {toolbarButtons.map((btn, i) => (
-              btn.type === 'divider' ? (
-                <div key={i} className="w-px h-5 bg-beige-dark/50 mx-1.5 flex-shrink-0" />
-              ) : 'icon' in btn ? (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={btn.action}
-                  title={btn.label}
-                  className={`p-2 rounded-xl transition-all flex-shrink-0 ${
-                    btn.isActive
-                      ? 'bg-gold/10 text-gold'
-                      : 'text-brown-dark/40 hover:text-brown-dark hover:bg-beige-dark/30'
-                  }`}
-                >
-                  <btn.icon size={15} />
-                </button>
-              ) : null
-            ))}
+          <div className="px-2 py-2 border-b border-beige-dark bg-beige-subtle overflow-x-auto custom-scrollbar">
+            <div className="flex items-center gap-0.5 min-w-max">
+              {toolbarButtons.map((btn, i) => (
+                btn.type === 'divider' ? (
+                  <div key={i} className="w-px h-6 bg-beige-dark/60 mx-1 flex-shrink-0" />
+                ) : 'icon' in btn ? (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={btn.action}
+                    title={btn.label}
+                    className={`p-2 rounded-lg transition-all flex-shrink-0 flex flex-col items-center min-w-[36px] ${
+                      btn.isActive
+                        ? 'bg-gold/15 text-gold'
+                        : 'text-brown-dark/60 hover:text-brown-dark hover:bg-white/60'
+                    }`}
+                  >
+                    <btn.icon size={16} strokeWidth={1.8} />
+                  </button>
+                ) : null
+              ))}
+            </div>
           </div>
         )}
 
@@ -256,11 +258,11 @@ export default function MarkdownEditor({ value, onChange, placeholder = 'Write y
           />
         )}
 
-        <div className="flex items-center justify-between px-5 py-2.5 border-t border-beige-dark/30 bg-beige-subtle/20">
-          <span className="text-[10px] font-medium text-brown-dark/25 uppercase tracking-wider">
+        <div className="flex items-center justify-between px-5 py-2.5 border-t border-beige-dark/50 bg-beige-subtle">
+          <span className="text-[10px] font-medium text-brown-dark/40 uppercase tracking-wider">
             {charCount} characters &middot; {wordCount} words
           </span>
-          <span className="text-[10px] font-medium text-brown-dark/20 uppercase tracking-wider">
+          <span className="text-[10px] font-medium text-brown-dark/30 uppercase tracking-wider">
             Markdown supported
           </span>
         </div>
