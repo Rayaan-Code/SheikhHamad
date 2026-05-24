@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ChevronLeft, Calendar, User, Tag, Share2, BookOpen, Play, Video } from 'lucide-react';
+import { ChevronLeft, Calendar, User, Tag, BookOpen, Play, Video } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import type { Content, Speaker, Category } from '../types';
 import ReactMarkdown from 'react-markdown';
 import { useAudio } from '../lib/AudioContext';
+import ShareBar from '../components/common/ShareBar';
 
 export default function ContentDetail() {
   const { slug } = useParams();
@@ -95,12 +96,10 @@ export default function ContentDetail() {
                 <div className="text-sm font-medium">Jan 24, 2024</div>
               </div>
             </div>
-
-            <button className="ml-auto w-10 h-10 rounded-full border border-beige-dark flex items-center justify-center text-purple/40 hover:bg-purple hover:text-white hover:border-purple transition-all">
-              <Share2 size={18} />
-            </button>
           </div>
         </header>
+
+        <ShareBar title={content.title} />
 
         {/* Media Player Section */}
         {content.type === 'VIDEO' && (content.youtubeId || content.mediaUrl) && (
