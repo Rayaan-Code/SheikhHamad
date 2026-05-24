@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import AudioPlayer from './components/library/AudioPlayer';
-import Home from './pages/Home';
-import Library from './pages/Library';
-import Courses from './pages/Courses';
-import Biography from './pages/Biography';
-import ContentDetail from './pages/ContentDetail';
-import Fawaaid from './pages/Fawaaid';
-import Admin from './pages/Admin';
 import { AudioProvider, useAudio } from './lib/AudioContext';
+
+const Home = lazy(() => import('./pages/Home'));
+const Library = lazy(() => import('./pages/Library'));
+const Courses = lazy(() => import('./pages/Courses'));
+const Biography = lazy(() => import('./pages/Biography'));
+const ContentDetail = lazy(() => import('./pages/ContentDetail'));
+const Fawaaid = lazy(() => import('./pages/Fawaaid'));
+const Admin = lazy(() => import('./pages/Admin'));
 
 function AppContent() {
   const { activeTrack, closePlayer } = useAudio();
@@ -29,15 +30,17 @@ function AppContent() {
           />
         </div>
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/library" element={<Library />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/about" element={<Biography />} />
-          <Route path="/library/:slug" element={<ContentDetail />} />
-          <Route path="/fawaaid" element={<Fawaaid />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
+        <Suspense fallback={<div className="h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-purple/30 border-t-purple rounded-full animate-spin" /></div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/about" element={<Biography />} />
+            <Route path="/library/:slug" element={<ContentDetail />} />
+            <Route path="/fawaaid" element={<Fawaaid />} />
+            <Route path="/admin" element={<Admin />} />
+          </Routes>
+        </Suspense>
         
         <AudioPlayer 
           currentTrack={activeTrack || undefined} 
