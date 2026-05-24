@@ -144,7 +144,7 @@ export default function ContentDetail() {
           </div>
         )}
 
-        <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-a:text-purple prose-strong:text-purple">
+        <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-headings:mt-10 prose-headings:mb-5 prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-p:my-5 prose-a:text-purple prose-strong:text-purple prose-li:text-brown-dark/80 prose-li:leading-relaxed prose-li:my-1.5">
           <div className="markdown-body">
             <ReactMarkdown>
               {content.body || content.description || 'No content available.'}

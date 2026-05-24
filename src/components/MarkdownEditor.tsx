@@ -237,7 +237,7 @@ export default function MarkdownEditor({ value, onChange, placeholder = 'Write y
         {preview ? (
           <div className="p-6 min-h-[260px] max-h-[600px] overflow-y-auto custom-scrollbar">
             {value.trim() ? (
-              <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-a:text-purple prose-strong:text-purple prose-blockquote:border-l-gold prose-blockquote:text-brown-dark/70 prose-code:bg-beige-subtle prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-li:text-brown-dark/80">
+              <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-headings:mt-8 prose-headings:mb-4 prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-p:my-4 prose-a:text-purple prose-strong:text-purple prose-blockquote:border-l-gold prose-blockquote:text-brown-dark/70 prose-blockquote:my-6 prose-code:bg-beige-subtle prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-li:text-brown-dark/80 prose-li:leading-relaxed prose-li:my-1">
                 <ReactMarkdown>{value}</ReactMarkdown>
               </div>
             ) : (
