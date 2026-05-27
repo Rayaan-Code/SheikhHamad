@@ -20,6 +20,7 @@ export interface Content {
   body?: string;
   type: ContentType;
   mediaUrl?: string;
+  heroImageUrl?: string;
   speakerId: string;
   categoryId: string;
   courseId?: string;

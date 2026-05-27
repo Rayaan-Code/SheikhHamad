@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ChevronLeft, Calendar, User, Tag, BookOpen, Play, Video } from 'lucide-react';
+import { ChevronLeft, Calendar, User, Tag, BookOpen, Play, Video, Image as ImageIcon } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import type { Content, Speaker, Category } from '../types';
@@ -46,6 +46,38 @@ export default function ContentDetail() {
     };
     fetchContent();
   }, [slug]);
+
+  useEffect(() => {
+    if (!content) return;
+    const description = content.description || content.body?.slice(0, 200).replace(/[#*_\n]/g, ' ').trim() || '';
+    const imageUrl = content.heroImageUrl || '';
+
+    document.title = `${content.title} - Sheikh Hamad Salafi`;
+
+    const setMeta = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    setMeta('og:title', content.title);
+    setMeta('og:description', description);
+    setMeta('og:url', window.location.href);
+    setMeta('og:type', 'article');
+    if (imageUrl) setMeta('og:image', imageUrl);
+    setMeta('twitter:card', imageUrl ? 'summary_large_image' : 'summary');
+    setMeta('twitter:title', content.title);
+    setMeta('twitter:description', description);
+    if (imageUrl) setMeta('twitter:image', imageUrl);
+
+    return () => {
+      document.title = 'Sheikh Hamad Salafi';
+    };
+  }, [content]);
 
   if (loading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
   if (!content) return <div className="h-screen flex items-center justify-center">Content not found.</div>;
@@ -98,6 +130,16 @@ export default function ContentDetail() {
             </div>
           </div>
         </header>
+
+        {content.heroImageUrl && (
+          <div className="mb-8 rounded-[2rem] overflow-hidden shadow-xl">
+            <img
+              src={content.heroImageUrl}
+              alt={content.title}
+              className="w-full h-auto object-cover aspect-[1200/630]"
+            />
+          </div>
+        )}
 
         <ShareBar title={content.title} />
 

@@ -24,6 +24,8 @@ export default function Admin() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [mediaUrl, setMediaUrl] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [heroImageUrl, setHeroImageUrl] = useState('');
   
   // Auth & Lists state
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -374,6 +376,7 @@ export default function Admin() {
       
       let finalMediaUrl = mediaUrl;
       let finalYoutubeId = '';
+      let finalHeroImageUrl = heroImageUrl;
 
       if (type === 'VIDEO' && youtubeUrl) {
         const id = getYoutubeId(youtubeUrl);
@@ -387,6 +390,20 @@ export default function Admin() {
           throw new Error(`File upload failed: ${uploadErr.message}. Ensure Storage bucket is configured.`);
         }
       }
+
+      if (heroImageFile) {
+        setMessage('Uploading hero image...');
+        try {
+          const storageRef = ref(storage, `hero-images/${Date.now()}_${heroImageFile.name}`);
+          const uploadTask = uploadBytesResumable(storageRef, heroImageFile);
+          await new Promise<void>((resolve, reject) => {
+            uploadTask.on('state_changed', null, (error) => reject(error), () => resolve());
+          });
+          finalHeroImageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+        } catch (uploadErr: any) {
+          throw new Error(`Hero image upload failed: ${uploadErr.message}`);
+        }
+      }
       
       setMessage('Recording archive metadata...');
       await addDoc(collection(db, 'contents'), {
@@ -396,6 +413,7 @@ export default function Admin() {
         body,
         mediaUrl: finalMediaUrl,
         youtubeId: finalYoutubeId,
+        heroImageUrl: finalHeroImageUrl || null,
         speakerId,
         categoryId,
         courseId: courseId || null,
@@ -408,6 +426,8 @@ export default function Admin() {
       setSlug('');
       setBody('');
       setFile(null);
+      setHeroImageFile(null);
+      setHeroImageUrl('');
       setUploadProgress(0);
       setMediaUrl('');
       setYoutubeUrl('');
@@ -697,6 +717,29 @@ export default function Admin() {
                       )}
                     </div>
                   )}
+
+                  <div className="p-8 bg-beige-subtle rounded-[2rem] border-2 border-dashed border-beige-dark">
+                    <label className="block text-center cursor-pointer">
+                      <div className="flex flex-col items-center">
+                        {heroImageFile ? (
+                          <div className="flex items-center gap-3 text-gold">
+                            <CheckCircle2 size={32} />
+                            <span className="text-sm font-bold truncate max-w-[200px]">{heroImageFile.name}</span>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload size={32} className="text-brown-dark/20 mb-3" />
+                            <span className="text-xs font-bold uppercase tracking-widest text-brown-dark/40">Hero Image (Social Preview)</span>
+                            <span className="text-[10px] text-brown-dark/30 mt-1">Optimal size: 1200 x 630 pixels (JPG/PNG/WebP)</span>
+                            <span className="text-[9px] text-brown-dark/20 mt-0.5">Shown when sharing link on social media and messaging apps</span>
+                          </>
+                        )}
+                      </div>
+                      <input type="file" className="hidden" onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) setHeroImageFile(e.target.files[0]);
+                      }} accept=".jpg,.jpeg,.png,.webp" />
+                    </label>
+                  </div>
 
                   <MarkdownEditor
                     value={body}
