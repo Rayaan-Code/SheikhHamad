@@ -81,37 +81,15 @@ export default function ContentDetail() {
   }, [content]);
 
   useEffect(() => {
-    if (!content || content.type !== 'ARTICLE') {
-      const existing = document.getElementById('article-data');
-      if (existing) existing.remove();
-      return;
-    }
+    if (!content || content.type !== 'ARTICLE' || !markdownRef.current) return;
 
-    const timeout = setTimeout(() => {
-      const htmlContent = markdownRef.current?.innerHTML || '';
+    const htmlContent = markdownRef.current.innerHTML || '';
+    const scriptTag = document.getElementById('article-data') as HTMLScriptElement | null;
+    if (!scriptTag) return;
 
-      let scriptTag = document.getElementById('article-data') as HTMLScriptElement | null;
-      if (!scriptTag) {
-        scriptTag = document.createElement('script');
-        scriptTag.type = 'application/json';
-        scriptTag.id = 'article-data';
-        document.body.appendChild(scriptTag);
-      }
-
-      scriptTag.textContent = JSON.stringify({
-        title: content.title,
-        summary: content.description || '',
-        content: htmlContent,
-        category: category?.name || '',
-        tags: [category?.name || ''].filter(Boolean),
-      });
-    }, 0);
-
-    return () => {
-      clearTimeout(timeout);
-      const existing = document.getElementById('article-data');
-      if (existing) existing.remove();
-    };
+    const current = JSON.parse(scriptTag.textContent || '{}');
+    current.content = htmlContent;
+    scriptTag.textContent = JSON.stringify(current);
   }, [content, category]);
 
   if (loading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
@@ -227,6 +205,22 @@ export default function ContentDetail() {
             </ReactMarkdown>
           </div>
         </div>
+
+        {content.type === 'ARTICLE' && (
+          <script
+            type="application/json"
+            id="article-data"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                title: content.title,
+                summary: content.description || '',
+                content: '',
+                category: category?.name || '',
+                tags: [category?.name || ''].filter(Boolean),
+              }),
+            }}
+          />
+        )}
 
         {content.type === 'PDF' && (content.gdriveId || content.mediaUrl) && (
           <>
