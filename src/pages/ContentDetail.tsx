@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ChevronLeft, Calendar, User, Tag, BookOpen, Play, Video, Image as ImageIcon } from 'lucide-react';
@@ -15,6 +15,7 @@ export default function ContentDetail() {
   const [speaker, setSpeaker] = useState<Speaker | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
+  const markdownRef = useRef<HTMLDivElement>(null);
   const { playTrack } = useAudio();
 
   useEffect(() => {
@@ -78,6 +79,40 @@ export default function ContentDetail() {
       document.title = 'Sheikh Hamad Salafi';
     };
   }, [content]);
+
+  useEffect(() => {
+    if (!content || content.type !== 'ARTICLE') {
+      const existing = document.getElementById('article-data');
+      if (existing) existing.remove();
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      const htmlContent = markdownRef.current?.innerHTML || '';
+
+      let scriptTag = document.getElementById('article-data') as HTMLScriptElement | null;
+      if (!scriptTag) {
+        scriptTag = document.createElement('script');
+        scriptTag.type = 'application/json';
+        scriptTag.id = 'article-data';
+        document.body.appendChild(scriptTag);
+      }
+
+      scriptTag.textContent = JSON.stringify({
+        title: content.title,
+        summary: content.description || '',
+        content: htmlContent,
+        category: category?.name || '',
+        tags: [category?.name || ''].filter(Boolean),
+      });
+    }, 0);
+
+    return () => {
+      clearTimeout(timeout);
+      const existing = document.getElementById('article-data');
+      if (existing) existing.remove();
+    };
+  }, [content, category]);
 
   if (loading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
   if (!content) return <div className="h-screen flex items-center justify-center">Content not found.</div>;
@@ -185,32 +220,45 @@ export default function ContentDetail() {
           </div>
         )}
 
-        <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-headings:mt-10 prose-headings:mb-5 prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-p:my-5 prose-a:text-purple prose-strong:text-purple prose-li:text-brown-dark/80 prose-li:leading-relaxed prose-li:my-1.5">
-          <div className="markdown-body">
+        <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-headings:mt-10 prose-headings:mb-5 prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-p:my-5 prose-a:text-purple prose-strong:text-purple prose-li:text-brown-dark/80 prose-li:leading-relaxed prose-li:my-1.5" dir="auto">
+           <div className="markdown-body" ref={markdownRef}>
             <ReactMarkdown>
               {content.body || content.description || 'No content available.'}
             </ReactMarkdown>
           </div>
         </div>
 
-        {content.type === 'PDF' && content.mediaUrl && (
-          <div className="mt-16 bg-white/60 backdrop-blur-md rounded-3xl p-8 border border-purple/10 flex flex-col md:flex-row items-center gap-8">
-            <div className="w-16 h-16 bg-purple/10 rounded-2xl flex items-center justify-center text-purple shrink-0">
-              <BookOpen size={32} />
+        {content.type === 'PDF' && (content.gdriveId || content.mediaUrl) && (
+          <>
+            {content.gdriveId && (
+              <div className="mb-12 rounded-[2.5rem] overflow-hidden bg-black aspect-[4/3] shadow-2xl">
+                <iframe
+                  className="w-full h-full"
+                  src={`https://drive.google.com/file/d/${content.gdriveId}/preview`}
+                  title={content.title}
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            )}
+            <div className="mt-8 bg-white/60 backdrop-blur-md rounded-3xl p-8 border border-purple/10 flex flex-col md:flex-row items-center gap-8">
+              <div className="w-16 h-16 bg-purple/10 rounded-2xl flex items-center justify-center text-purple shrink-0">
+                <BookOpen size={32} />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="font-serif text-xl font-bold mb-1">Attached PDF Document</h3>
+                <p className="text-sm text-brown-dark/50 mb-4 md:mb-0">This work has an associated PDF file for offline study.</p>
+              </div>
+              <a 
+                href={content.gdriveId ? `https://drive.google.com/file/d/${content.gdriveId}/view` : content.mediaUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-purple text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:shadow-lg transition-all"
+              >
+                {content.gdriveId ? 'Open in Drive' : 'Download PDF'}
+              </a>
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="font-serif text-xl font-bold mb-1">Attached PDF Document</h3>
-              <p className="text-sm text-brown-dark/50 mb-4 md:mb-0">This work has an associated PDF file for offline study.</p>
-            </div>
-            <a 
-              href={content.mediaUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-purple text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:shadow-lg transition-all"
-            >
-              Download PDF
-            </a>
-          </div>
+          </>
         )}
       </motion.article>
     </div>
