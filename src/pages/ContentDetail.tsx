@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ChevronLeft, Calendar, User, Tag, BookOpen, Play, Video, Image as ImageIcon } from 'lucide-react';
@@ -15,7 +16,6 @@ export default function ContentDetail() {
   const [speaker, setSpeaker] = useState<Speaker | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
-  const markdownRef = useRef<HTMLDivElement>(null);
   const { playTrack } = useAudio();
 
   useEffect(() => {
@@ -79,18 +79,6 @@ export default function ContentDetail() {
       document.title = 'Sheikh Hamad Salafi';
     };
   }, [content]);
-
-  useEffect(() => {
-    if (!content || content.type !== 'ARTICLE' || !markdownRef.current) return;
-
-    const htmlContent = markdownRef.current.innerHTML || '';
-    const scriptTag = document.getElementById('article-data') as HTMLScriptElement | null;
-    if (!scriptTag) return;
-
-    const current = JSON.parse(scriptTag.textContent || '{}');
-    current.content = htmlContent;
-    scriptTag.textContent = JSON.stringify(current);
-  }, [content, category]);
 
   if (loading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
   if (!content) return <div className="h-screen flex items-center justify-center">Content not found.</div>;
@@ -199,28 +187,35 @@ export default function ContentDetail() {
         )}
 
         <div className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-purple prose-headings:mt-10 prose-headings:mb-5 prose-p:text-brown-dark/80 prose-p:leading-relaxed prose-p:my-5 prose-a:text-purple prose-strong:text-purple prose-li:text-brown-dark/80 prose-li:leading-relaxed prose-li:my-1.5" dir="auto">
-           <div className="markdown-body" ref={markdownRef}>
+           <div className="markdown-body">
             <ReactMarkdown>
               {content.body || content.description || 'No content available.'}
             </ReactMarkdown>
           </div>
         </div>
 
-        {content.type === 'ARTICLE' && (
-          <script
-            type="application/json"
-            id="article-data"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                title: content.title,
-                summary: content.description || '',
-                content: '',
-                category: category?.name || '',
-                tags: [category?.name || ''].filter(Boolean),
-              }),
-            }}
-          />
-        )}
+        {content.type === 'ARTICLE' && (() => {
+          const markdownSource = content.body || content.description || '';
+          const articleHtml = markdownSource
+            ? renderToStaticMarkup(<ReactMarkdown>{markdownSource}</ReactMarkdown>)
+            : '';
+
+          return (
+            <script
+              type="application/json"
+              id="article-data"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  title: content.title,
+                  summary: content.description || '',
+                  content: articleHtml,
+                  category: category?.name || '',
+                  tags: [category?.name || ''].filter(Boolean),
+                }),
+              }}
+            />
+          );
+        })()}
 
         {content.type === 'PDF' && (content.gdriveId || content.mediaUrl) && (
           <>
