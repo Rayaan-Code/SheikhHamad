@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ChevronLeft, Calendar, User, Tag, BookOpen, Play, Video, Image as ImageIcon } from 'lucide-react';
@@ -193,29 +192,6 @@ export default function ContentDetail() {
             </ReactMarkdown>
           </div>
         </div>
-
-        {content.type === 'ARTICLE' && (() => {
-          const markdownSource = content.body || content.description || '';
-          const articleHtml = markdownSource
-            ? renderToStaticMarkup(<ReactMarkdown>{markdownSource}</ReactMarkdown>)
-            : '';
-
-          return (
-            <script
-              type="application/json"
-              id="article-data"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
-                  title: content.title,
-                  summary: content.description || '',
-                  content: articleHtml,
-                  category: category?.name || '',
-                  tags: [category?.name || ''].filter(Boolean),
-                }),
-              }}
-            />
-          );
-        })()}
 
         {content.type === 'PDF' && (content.gdriveId || content.mediaUrl) && (
           <>

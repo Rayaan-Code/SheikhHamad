@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/library/:slug", "destination": "/api/article-proxy?slug=:slug" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
