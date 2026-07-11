@@ -100,7 +100,7 @@ export default function Biography() {
                   'Shaykh Sulaiman al-Ruhaili',
                   'Shaykh Sami al-Saqir',
                   'Shaykh Abd al-Muhsin al-Qasim',
-                  'Shaykh Saleh bin Abdullah al-Ubaid',
+                  'Shaykh Abdullah bin Saleh al-Ubaid',
                 ].map((name) => (
                   <li key={name} className="flex items-center gap-3 text-[11px] font-bold text-brown-dark">
                     <div className="w-1.5 h-1.5 rounded-full bg-purple shrink-0"></div>
@@ -127,7 +127,7 @@ export default function Biography() {
                 'Shaykh Abd al-Wakil al-Hashimi',
                 'Shaykh Yahya al-Mudarris',
                 'Shaykh Abd al-Muhsin al-Qasim',
-                'Shaykh Saleh bin Abdullah al-Ubaid',
+                'Shaykh Abdullah bin Saleh al-Ubaid',
                 'Shaykh Asim al-Qaryuti',
                 'Shaykh Qasim al-Bahr',
                 'Shaykh Sanaullah al-Madani',
